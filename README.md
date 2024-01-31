@@ -2,7 +2,8 @@
 
 Includes the following items : 
 + Haptic Engine libraries for Windows x64 platform 
-+ XInput support libraries for Windows x64 platform 
++ GameInput support libraries for Windows x64 platform 
++ Sensa HD Haptics support libraries for Windows x64 platform 
 + Public headers for exposed APIs 
 
 Documentation : 
