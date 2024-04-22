@@ -100,6 +100,8 @@ namespace Interhaptics
 			/// Side targeted
 			/// </summary>
 			LateralFlag Side;
+
+
 		};
 	}
 }
