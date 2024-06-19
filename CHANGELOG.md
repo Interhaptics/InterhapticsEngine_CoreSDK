@@ -1,3 +1,9 @@
+# v1.4.2
+
++ Updated GameInputProvider to fix crash on Init, IsPresent, Clean and RenderHaptics
+
+___________________________________
+
 # v1.4.0
 
 + Added GlobalIntensy API
