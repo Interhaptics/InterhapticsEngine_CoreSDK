@@ -1,3 +1,10 @@
+# v1.4.3
+
++ Added Win32 libraries for HAR
++ Added Win32 libraries for Sensa provider
+
+___________________________________
+
 # v1.4.2
 
 + Updated GameInputProvider to fix crash on Init, IsPresent, Clean and RenderHaptics
