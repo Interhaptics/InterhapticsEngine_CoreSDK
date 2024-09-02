@@ -1,3 +1,11 @@
+# v1.5.0
+
++ Fixed an issue that could cause a crash if 2 controllers were plugged at the same time
++ Fixed an issue that could result in no haptic to be rendered on Sensa platform
++ Updated engine version to 1.7.0
++ Updated Sensa provider to 1.1.1
++ Updated GameInput provider to 1.3.0
+
 # v1.4.3
 
 + Added Win32 libraries for HAR
