@@ -1,3 +1,9 @@
+# v1.5.1
+
++ Updated Sensa provider to 1.2.0
+
+___________________________________
+
 # v1.5.0
 
 + Fixed an issue that could cause a crash if 2 controllers were plugged at the same time
@@ -5,6 +11,8 @@
 + Updated engine version to 1.7.0
 + Updated Sensa provider to 1.1.1
 + Updated GameInput provider to 1.3.0
+
+___________________________________
 
 # v1.4.3
 
