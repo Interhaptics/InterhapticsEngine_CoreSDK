@@ -1,3 +1,18 @@
+# v1.13.0
+
++ Internal refactor
++ Fixed double transient rendering
++ Fixed transient only played on first target
++ Fixed empty frame rendering while two effects are playing
+
+____________________________________________
+
+# v1.10.5
+
++ Added mixing priority system
+
+____________________________________________
+
 # v1.10.4
 
 + Added Haptic Jingle API

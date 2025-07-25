@@ -1,20 +1,24 @@
 /* ​
-* Copyright © 2023 Go Touch VR SAS. All rights reserved.
+* Copyright © 2025 Go Touch VR SAS. All rights reserved.
 * ​
 */
 
 #ifndef IH_ENGINE_PUBLIC
 #define IH_ENGINE_PUBLIC
 
+#define DLLExport __declspec(dllexport)
+
 #include <vector>
-#include <include/SharedTypes.h>
+#include <SharedTypes.h>
 
 using namespace Interhaptics::HapticBodyMapping;
 
 extern "C"
 {
 
-	#pragma region Engine Control
+//------------------------------------------------------------------------------------------------------------------
+#pragma region Engine Control
+//------------------------------------------------------------------------------------------------------------------
 
 	/// <summary>
 	/// Initializes the different components and modules of the Interhaptics Engine:
@@ -45,9 +49,9 @@ extern "C"
 	DLLExport double GetGlobalIntensity();
 
 	/// <summary>
-	/// Adds the content of an .haps file to the Interhaptics Engine for future use.
+	/// Adds the content of an .haps file to the Interhaptics Engine.
 	/// </summary>
-	/// <param name="_content">JSON content of the .haps file to be loaded. Needs to follow Interhaptics .haps format.</param>
+	/// <param name="_content">JSON content of the .haps file to be loaded. Needs to follow Interhaptics .haps format. An empty string will create an empty effect. </param>
 	/// <returns>ID of the haptic effect to be used in other engine calls. -1 if loading failed.</returns>
 	DLLExport int AddHM(const char* _content);
 
@@ -76,20 +80,42 @@ extern "C"
 	/// <param name="_content">JSON content of the .haps file to be loaded. Needs to follow Interhaptisc .haps format.</param>
 	/// <returns>true if the effect was properly updated. false otherwise</returns>
 	DLLExport bool UpdateHM(int _hMaterialID, const char* _content);
+	DLLExport bool UpdateParametricEffect(int _effectId, double* _amplitude, int _amplitudeSize, double* _pitch, int _pitchSize, double _pitchMin, double _pitchMax, double* _transient, int _transientSize, bool _isLooping);
+
+#if HAR_WINDOWS
+
+	typedef void(*DeviceCallBack)();
+	static inline DeviceCallBack g_deviceCallBackInstance = nullptr;
+	DLLExport void RegisterDeviceCallback(DeviceCallBack _callback);
+	DLLExport void RemoveDeviceCallback();
 
 	/// <summary>
-	/// Return true if at least one active event targeting the given bodyparts contains transients
+	/// Get the description of a connected device
 	/// </summary>
-	/// <param name="_perception">perception to play</param>
-	/// <param name="_bodyparts">Ids of bodyparts targeted</param>
-	/// <param name="_numberOfBodyparts">size of _bodyparts</param>
-	/// <returns>true if at least one transient in a file</returns>
-	DLLExport bool TransientsPlayedOnThoseBodyparts(int _perception, int* _bodyparts, int _numberOfBodyparts);
+	/// <param name="_deviceId">ID returned by the AddConnectedDevice API. </param>
+	/// <returns>Description of the device. </returns>
+	DLLExport Interhaptics::HapticDevice::DeviceDescription GetConnectedDevice(unsigned long long _deviceId);
 
-	#pragma endregion
+	/// <summary>
+	/// Get the number of registered connected devices. 
+	/// </summary>
+	DLLExport int GetConnectedDeviceCount();
 
+	/// <summary>
+	/// Get the description of a connected device based on its position 
+	/// in the list of connected devices. 
+	/// </summary>
+	/// <returns>Description of the device. </returns>
+	DLLExport Interhaptics::HapticDevice::DeviceDescription GetConnectedDeviceAtIndex(int _index);
 
-	#pragma region Engine Events
+#endif
+
+#pragma endregion
+//------------------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------------------
+#pragma region Engine Events
+//------------------------------------------------------------------------------------------------------------------
 
 	/// <summary>
 	/// Starts the rendering playback of a haptic source. 
@@ -123,6 +149,7 @@ extern "C"
 	/// <param name="_target">Vector of CommandData to build a target. A target contains a group of bodyparts, lateral flags, and exclusion flags.</param>
 	/// <returns></returns>
 	DLLExport void AddTargetToEvent(int _hMaterialID, std::vector<CommandData> _target);
+
 
 	/// <summary>
 	/// Marshal version of the AddTargetToEvent function.
@@ -166,6 +193,21 @@ extern "C"
 	/// <param name="_hMaterialID">ID of the source to remove a targets. Same as the attached haptic effect.</param>
 	/// <returns></returns>
 	DLLExport void RemoveAllTargetsFromEvent(int _hMaterialID);
+
+	/// <summary>
+	/// Change the override flag of the event. If true, will be played in top of any other effects with no merging.
+	/// If false, will be merged with any existing effect.
+	/// </summary>
+	/// <param name="_hMaterialID">ID of the event to modify</param>
+	/// <param name="_override">new value</param>
+	DLLExport void EventOverride(int _hMaterialID, bool _override);
+
+	/// <summary>
+	/// Change the priority of the event
+	/// </summary>
+	/// <param name="_hMaterialID">ID of the event to modify</param>
+	/// <param name="_priority">new value, clamped between 0 and 100, the upper the more priority it has</param>
+	DLLExport void EventSetPriority(int _hMaterialID, int _priority);
 
 	/// <summary>
 	/// To be called in the application main loop to trigger the rendering of all haptic buffer
@@ -219,7 +261,7 @@ extern "C"
 	/// Sets the loop flag for a specific source
 	/// </summary>
 	/// <param name="_hMaterialID">ID of the source. Same as the attached haptic effect.</param>
-	/// <param name="_numberOfLoop">Number of loop for the event. <= 1 is one iteration.</param>
+	/// <param name="_numberOfLoop">Number of loop for the event. 0-1 is one iteration. < 0 is infinite loop. </param>
 	/// <returns></returns>
 	DLLExport void SetEventLoop(int _hMaterialID, int _numberOfLoop);
 
@@ -262,7 +304,32 @@ extern "C"
 	/// <returns></returns>
 	DLLExport void ClearEvent(int _hMaterialID);
 
-	#pragma endregion
+	/// <summary>
+	/// Load the Sensa jingle if not already loaded
+	/// </summary>
+	/// <returns></returns>
+	DLLExport void LoadJingle();
+
+	/// <summary>
+	/// Unload the Sensa jingle if not already loaded
+	/// </summary>
+	/// <returns></returns>
+	DLLExport void UnloadJingle();
+
+	/// <summary>
+	/// Play the Sensa jingle
+	/// </summary>
+	/// <returns></returns>
+	DLLExport void PlayJingle();
+
+	/// <summary>
+	/// Stop the Sensa jingle
+	/// </summary>
+	/// <returns></returns>
+	DLLExport void StopJingle();
+
+#pragma endregion
+//------------------------------------------------------------------------------------------------------------------
 }
 
 #endif
